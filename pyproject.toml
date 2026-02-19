@@ -22,6 +22,7 @@ pytest = "^9.0.2"
 ipython = "^9.10.0"
 django-extensions = "^4.1"
 django-debugtools = "^2.0"
+python-dotenv = "^1.2.1"
 
 
 [build-system]
