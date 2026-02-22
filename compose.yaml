@@ -1,9 +1,13 @@
 services:
   backend:
     build: .
-    command: python manage.py runserver 8.8.8.8:8000
+    command: poetry run python manage.py runserver 0.0.0.0:8000
     depends_on:
-        - db
+      - db
+    env_file:
+      - ./.env
+    ports:
+      - 8000:8000
 
   db:
     image: postgres:17-alpine
@@ -12,6 +16,8 @@ services:
     restart: always
     env_file:
       - ./.env
+    ports:
+      - 5432:5432
 
 volumes:
   postgres_data:
