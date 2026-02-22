@@ -1,0 +1,17 @@
+services:
+  backend:
+    build: .
+    command: python manage.py runserver 8.8.8.8:8000
+    depends_on:
+        - db
+
+  db:
+    image: postgres:17-alpine
+    volumes:
+      - postgres_data:/var/lib/postgres/data
+    restart: always
+    env_file:
+      - ./.env
+
+volumes:
+  postgres_data:
