@@ -1,18 +1,17 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.gis.gdal.prototypes.ds import cleanup_all
 from django.forms import forms
 
 from users.models import User
 
 
-class UserCreationForm(UserCreationForm):
+class UserRegistrationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ['email', 'username', 'first_name', 'last_name', 'password1', 'password2']
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if User.objects.filter(email = email).exists()
+        if User.objects.filter(email = email).exists():
             raise forms.ValidationError('This email is alread in use')
         return email
 

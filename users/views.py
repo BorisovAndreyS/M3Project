@@ -8,4 +8,5 @@ from users.forms import UserCreationForm
 
 class UserCreationView(CreateView):
     form_class = UserCreationForm
-    template_name = 'registration/signup.html'
+    template_name = 'users/register.html'
+    success_url = '/'
