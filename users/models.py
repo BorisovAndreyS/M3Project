@@ -4,7 +4,9 @@ from django.db import models
 # Create your models here.
 class User(AbstractUser):
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
+    REQUIRED_FIELDS = ['username']
+
+    # objects = models.Manager()
 
     email = models.EmailField(unique=True)
 
@@ -15,7 +17,10 @@ class User(AbstractUser):
                               null=True, blank=True
                               )
 
-
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+        ordering = ['email']
 
     def __str__(self):
         return self.email
