@@ -1,5 +1,5 @@
-from django.contrib.auth.forms import UserCreationForm
-from django.forms import forms
+from django.contrib.auth.forms import UserCreationForm, forms
+# from django.forms import forms
 
 from users.models import User
 
@@ -8,7 +8,22 @@ class UserRegistrationForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ['email', 'username', 'first_name', 'last_name', 'password1', 'password2']
-
+        widgets = {
+            'email': forms.EmailInput(attrs={'placeholder': 'example@gmail.com', 'class':'Input'}),
+            'username': forms.TextInput(attrs={'placeholder': 'Your username', 'class':'Input'}),
+            'first_name': forms.TextInput(attrs={'placeholder': 'Your name', 'class':'Input'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Your last name', 'class':'Input'}),
+            'password1': forms.PasswordInput(attrs={'placeholder':'qwerty123', 'class':'Input'}),
+            'password2': forms.PasswordInput(attrs={'placeholder':'qwerty123', 'class':'Input'}),
+        }
+        labels={
+            'email': 'Email',
+            'username': 'Username',
+            'first_name': 'First name',
+            'last_name': 'Last name',
+            'password1': 'Password',
+            'password2': 'Confirm Password',
+        }
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email = email).exists():
@@ -22,3 +37,16 @@ class UserRegistrationForm(UserCreationForm):
         if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords do not match")
         return cleaned_data
+
+
+class UserLoginForm(forms.Form):
+    email = forms.EmailField(widget=forms.EmailInput(
+        attrs={'palceholder': 'example@gmail.com', 'class': 'Input'}))
+
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={'placeholder':'qwerty123', 'class': 'Input'}))
+
+    def __init__(self, request=None, *args, **kwargs):
+        super().__init__(request, *args, **kwargs)
+
+        self.fields['username'].label = 'Email'
