@@ -12,5 +12,6 @@ urlpatterns = [
                                      redirect_authenticated_user=True,
                                      success_url='/',
                                      ), name='login'),
+    path('account/', views.AccountView.as_view(), name='account'),
 ]
 
