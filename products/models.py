@@ -1,3 +1,5 @@
+from django.contrib.auth import get_user_model
+from django.core.validators import MinLengthValidator, MaxLengthValidator
 from django.db import models
 
 
@@ -10,11 +12,7 @@ class JournalizedModel(models.Model):
         ordering = ('-created_at',)
 
 
-
-
-
-
-#Create your models here.
+# Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length=256)
     slug = models.CharField(max_length=100, unique=True)
@@ -23,8 +21,6 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'category'
         verbose_name_plural = 'categories'
-
-
 
     def __str__(self):
         return self.name
@@ -52,3 +48,11 @@ class Product(JournalizedModel):
 
     def get_absolute_url(self):
         return f'/products/{self.slug}/'
+
+
+class Review(JournalizedModel):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(validators=[MinLengthValidator(1), MaxLengthValidator(5)])
+    comment = models.TextField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
