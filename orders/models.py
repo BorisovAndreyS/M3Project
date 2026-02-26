@@ -7,15 +7,13 @@ from products.models import JournalizedModel
 # Create your models here.
 
 class Order(JournalizedModel):
-    STATUSES =(
+    STATUSES = (
         ('pending', 'Pending'),
-        ('paid','Paid'),
+        ('paid', 'Paid'),
         ('shipped', 'Shipped'),
         ('delivered', 'Delivered'),
         ('cancelled', 'Cancelled'),
     )
-
-
 
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     status = models.CharField(max_length=20, choices=STATUSES, default='pending')
@@ -24,8 +22,7 @@ class Order(JournalizedModel):
 
 
 class OrderItem(models.Model):
-     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-     products = models.ForeignKey('products.Product', on_delete=models.CASCADE)
-     quantity = models.PositiveIntegerField()
-     price = models.DecimalField(max_digits=8, decimal_places=2)
-
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+    products = models.ForeignKey('products.Product', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=8, decimal_places=2)
