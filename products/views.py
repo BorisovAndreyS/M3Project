@@ -28,3 +28,7 @@ class ProductListView(ListView):
         context = super().get_context_data(**kwargs)
         context['categories'] = Category.objects.all()
         return context
+
+class GuidesView(TemplateView):
+    template_name = 'guides-recipes.html'
+
