@@ -17,3 +17,4 @@ class UserCreationView(CreateView):
 
 class AccountView(TemplateView):
     template_name = 'account.html'
+
