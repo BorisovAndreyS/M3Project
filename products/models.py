@@ -16,7 +16,7 @@ class JournalizedModel(models.Model):
 # Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length=256)
-    slug = models.CharField(max_length=100, unique=True)
+    slug = models.CharField(max_length=100, unique=True, blank=True)
     parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
@@ -28,6 +28,12 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return f'/product/category/{self.slug}/'
+
+#Создаем автоматический slug
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
 
 
 
