@@ -32,10 +32,10 @@ class ProductListView(ListView):
             .select_related('category') \
             .annotate(avg_rating=Avg('review__rating'))
 
-        #filter by category
-        categories = self.request.GET.get('categories', None)
+        #filter by category_WORK
+        categories = self.request.GET.get('category', None)
         if categories:
-            qs = qs.filter(category__slug__in = categories.split(','))
+            qs = qs.filter(category__id__in = categories.split(','))
 
 
         # search
@@ -46,21 +46,35 @@ class ProductListView(ListView):
 
 
 
-        #sort
+        #sort_work
         qs_key = self.request.GET.get('sort', 'new')
 
         qs = qs.order_by(PRODUCT_QUERY_STRING_MAP[qs_key])
+
         # if sort == 'price':
         #     qs = qs.order_by('price')
         # elif sort == 'rating':
         #     qs = qs.order_by('-avg_rating')
 
-
         return list(qs)
 
     def get_context_data(self, *, object_list=..., **kwargs):
         context = super().get_context_data(**kwargs)
+
+        #Категории для слайдера
         context['categories'] = Category.objects.all()
+
+        #Выбранные категории
+        context['select_category'] = self.request.GET.getlist('category')
+
+        #Текущая сортировка
+        context['current_sort'] = self.request.GET.get('sort', 'new')
+
+        #Сохраняем параметры GET без page
+        context['get_params'] = self.request.GET.copy()
+        if 'page' in context['get_params']:
+            context['get_params'].pop('page')
+
         return context
 
 

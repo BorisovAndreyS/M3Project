@@ -95,7 +95,7 @@ MEDIA_ROOT = BASE_DIR / "media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 PRODUCT_QUERY_STRING_MAP = {
-    'new': '-created',
+    'new': '-created_at',
     'rating' : '-review__rating',
     'price_asc' : 'price',
     'price_desc' : '-price',

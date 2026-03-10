@@ -11,7 +11,7 @@ app_name = 'products'
 
 urlpatterns = [
     path('guides-recipes/', GuidesView.as_view(), name= 'guides-recipes'),
-    path('<slug:slug>/', ProductDetailView.as_view(), name='product'),
+    path('products/<slug:slug>/', ProductDetailView.as_view(), name='product'),
     path('', ProductListView.as_view(), name='products_list'),
 
 
