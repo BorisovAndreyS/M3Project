@@ -2,6 +2,9 @@ from django.db.models import Avg, Q
 from django.db.models.query_utils import select_related_descend
 from django.shortcuts import render
 from django.views.generic import DetailView, TemplateView, ListView
+
+from orders.models import CartItem
+from orders.services import get_or_create_cart
 from products.models import Product, Review, Category
 from config.settings import PRODUCT_QUERY_STRING_MAP
 
@@ -18,6 +21,13 @@ class ProductDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['reviews'] = Review.objects.filter(product=self.object)
+        cart = get_or_create_cart(self.request)
+        cart_item = CartItem.objects.filter(
+            cart=cart,
+            product = self.object
+        ).first()
+        context['quantity_in_cart'] = cart_item.quantity if cart_item else 0
+        context['cart_item'] = cart_item
         return context
 
 

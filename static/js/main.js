@@ -108,11 +108,19 @@ document.addEventListener('DOMContentLoaded', function() {
         const cartControls = document.querySelector('.cart-controls');
         if (cartControls) {
             const addToCartBtn = cartControls.querySelector('#add-to-cart-btn');
+            console.log('🔍 addToCartBtn found:', addToCartBtn);
             const quantityCounter = cartControls.querySelector('#quantity-counter');
             const decreaseBtn = quantityCounter.querySelector('[data-action="decrease"]');
             const increaseBtn = quantityCounter.querySelector('[data-action="increase"]');
             const quantityValueSpan = quantityCounter.querySelector('.quantity-value');
-            let quantity = 0;
+
+            //Получаем текущее колво с сервера из data-атрибута или по умолчанию 0
+            let quantity = parseInt(cartControls.dataset.quantity || 0);
+            const productId = cartControls.dataset.productId;
+            const productSlug = cartControls.dataset.productSlug;
+            const addToCartUrl = cartControls.dataset.addCartUrl;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken')?.value;
+
             function updateView() {
                 if (quantity === 0) {
                     addToCartBtn.classList.remove('is-hidden');
@@ -123,9 +131,78 @@ document.addEventListener('DOMContentLoaded', function() {
                     quantityValueSpan.textContent = `${quantity} in cart`;
                 }
             }
-            addToCartBtn.addEventListener('click', function() { quantity = 1; updateView(); });
-            decreaseBtn.addEventListener('click', function() { if (quantity > 0) { quantity--; updateView(); } });
-            increaseBtn.addEventListener('click', function() { quantity++; updateView(); });
+            async function updateCartOnServer(newQuantity) {
+                try {
+                    const response = await fetch(addToCartUrl, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ quantity: newQuantity})
+                    });
+                    if (!response.ok) throw new Error('Server error');
+
+                    const data = await response.json();
+                    if (data.success) {
+                        quantity = data.quantity;
+                        updateView();
+                        return true;
+                    }
+                    return false;
+                } catch (error) {
+                        console.error('Full error:', error);
+                        // Попробуем получить текст ошибки от сервера
+                        if (error.response) {
+                            error.response.text().then(text => {
+                                console.error('Server response:', text);
+                                alert('Ошибка сервера: ' + text);
+                            });
+                        } else {
+                            alert('Не удалось обновить корзину. Проверьте консоль (F12).');
+                        }
+                        return false;
+                    }
+            }
+
+            //Кнопка добавить в корзину
+            addToCartBtn?.addEventListener('click', async function(e) {
+                e.preventDefault();
+                const success = await updateCartOnServer(1);
+                if (success) {
+                    console.log('✅ Товар добавлен');
+                }
+            });
+
+            //Кнопка уменьшения кол-ва
+            decreaseBtn?.addEventListener('click', async function() {
+                if (quantity > 1) {
+                    const newQty = quantity - 1;
+                    const success = await updateCartOnServer(newQty);
+                    if (!success) {
+                        //Откат в случае ошибки
+                        quantity = newQty + 1;
+                        updateView();
+                    }
+                } else if (quantity === 1) {
+                        const success = await updateCartOnServer(0);
+                        if (success) {
+                            console.log('✅ Товар удалён из корзины');
+                        }
+                    }
+            });
+
+
+            increaseBtn?.addEventListener('click', async function() {
+                const newQty = quantity + 1;
+                const success = await updateCartOnServer(newQty);
+                if (!success) {
+                    quantity = newQty - 1;
+                    updateView();
+                }
+            });
+
             updateView();
         }
     }
@@ -136,6 +213,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const cartItemsList = document.getElementById('cart-items-list');
         const cartTotalPriceElem = document.getElementById('cart-total-price');
         function updateCartTotal() {
+            console.log('Я тут!!!')
             let total = 0;
             document.querySelectorAll('.cart-item').forEach(item => {
                 const priceText = item.querySelector('[data-item-total-price]').textContent;
@@ -145,26 +223,104 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             if (cartTotalPriceElem) cartTotalPriceElem.textContent = `$${total.toFixed(2)}`;
         }
+        //Функция для обновления корзины на сервере об новом колве товара
+        async function updateCartOnServer(itemId, newQuantity, updateUrl, csrfToken) {
+                try {
+                        const response = await fetch(updateUrl, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': csrfToken,
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ quantity: newQuantity,
+                                               itemId: itemId })
+                    });
+                    if (!response.ok) throw new Error('Server error');
+
+                    const data = await response.json();
+                    if (data.success) {
+                        quantity = data.quantity;
+                        updateCartTotal();
+                        return true;
+                    }
+                    return false;
+                } catch (error) {
+                        console.error('Full error:', error);
+                        // Попробуем получить текст ошибки от сервера
+                        if (error.response) {
+                            error.response.text().then(text => {
+                                console.error('Server response:', text);
+                                alert('Ошибка сервера: ' + text);
+                            });
+                        } else {
+                            alert('Не удалось обновить корзину. Проверьте консоль (F12).');
+                        }
+                        return false;
+                    }
+            }
         if (cartItemsList) {
-            cartItemsList.addEventListener('click', function(event) {
+            cartItemsList.addEventListener('click', async function(event) {
+                const actionBtn = event.target.closest('[data-action]')
+//                console.log('action-btn', actionBtn)
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken')?.value;
+                if (!actionBtn) return;
+
+                const action = actionBtn.dataset.action;
+//                console.log('action', action)
+
                 const cartItem = event.target.closest('.cart-item');
                 if (!cartItem) return;
+
+
+                const itemId = cartItem.dataset.itemid;
+                const updateUrl = cartItem.dataset.updateUrl;
+                //console.log('[updateUrl]', updateUrl);
                 const quantityElem = cartItem.querySelector('.quantity-value-cart');
+                console.log('[.quantity-value-cart]', quantityElem);
                 const itemTotalElem = cartItem.querySelector('[data-item-total-price]');
+                console.log('[data-item-total-price]', itemTotalElem);
                 const basePrice = parseFloat(cartItem.dataset.price);
+                console.log('[cartItem.dataset.price]', basePrice);
                 let quantity = parseInt(quantityElem.textContent);
-                if (event.target.closest('[data-action="increase"]')) {
-                    quantity++;
-                } else if (event.target.closest('[data-action="decrease"]')) {
-                    quantity = quantity > 1 ? quantity - 1 : 0;
+                //console.log('let quantity', quantity)
+
+//                if (event.target.closest('[data-action="increase"]')) {
+//                    quantity++;
+//                } else if (event.target.closest('[data-action="decrease"]')) {
+//                    quantity = quantity > 1 ? quantity - 1 : 0;
+//                }
+//                if (event.target.closest('[data-action="remove"]') || quantity === 0) {
+//                    cartItem.remove();
+//                } else {
+
+//                }
+
+
+                //Получаем новое кол-во
+                let newQty;
+                if (action==='increase'){
+                    newQty = quantity + 1;
+                } else if (action ==='decrease'){
+                    newQty = quantity - 1;
+                } else if (action === 'remove'){
+                    newQty = 0;
                 }
-                if (event.target.closest('[data-action="remove"]') || quantity === 0) {
-                    cartItem.remove();
-                } else {
-                    quantityElem.textContent = quantity;
-                    itemTotalElem.textContent = `$${(basePrice * quantity).toFixed(2)}`;
-                }
+
+                //Отправляем данные на сервер
+                const success = await updateCartOnServer(itemId, newQty, updateUrl, csrfToken);
+
+                if (success){
+                      quantityElem.textContent = newQty;
+                      console.log("[newQty]", newQty)
+                      itemTotalElem.textContent = `$${(basePrice * newQty).toFixed(2)}`;
+                      if (newQty === 0){
+                        cartItem.remove();
+                    } else {
+                        quantityElem.textContent = newQty;
+                    }
                 updateCartTotal();
+                }
             });
         }
         updateCartTotal();

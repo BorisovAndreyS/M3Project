@@ -19,18 +19,30 @@
                 <div class="product-description">
                     <p>{{ product.description }}</p>
                 </div>
-                <div class="cart-controls">
+
+                <div class="cart-controls"
+                     data-product-id = "{{ product.id }}"
+                     data-product-slug = "{{ product.slug }}"
+                     data-quantity = "{{ cart_item.quantity|default:0 }}"
+                     data-add-cart-url="{% url 'orders:add_to_cart' product.slug %}">
+
+                    {% csrf_token%}
+
                     <button class="button button--primary add-to-cart-button" id="add-to-cart-btn">
                         <i class="fa-solid fa-cart-shopping"></i>
                         <span>Add to Cart</span>
                     </button>
-                    <div class="quantity-counter is-hidden" id="quantity-counter">
+
+                    <div class="quantity-counter {% if quantity_in_cart == 0 %}is-hidden{%endif%}" id="quantity-counter">
                         <button class="quantity-btn" data-action="decrease" aria-label="Decrease quantity"><i
-                                class="fa-solid fa-minus"></i></button>
-                        <span class="quantity-value">1 in cart</span>
+                            class="fa-solid fa-minus"></i>
+                        </button>
+                        <span class="quantity-value">{{ cart_item.quantity|default:0 }} в корзине</span>
                         <button class="quantity-btn" data-action="increase" aria-label="Increase quantity"><i
-                                class="fa-solid fa-plus"></i></button>
+                            class="fa-solid fa-plus"></i>
+                        </button>
                     </div>
+
                 </div>
             </div>
         </section>
