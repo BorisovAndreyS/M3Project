@@ -1,12 +1,24 @@
+from django.contrib import messages
 from django.views.generic import CreateView, FormView, TemplateView
-
+from django.urls import reverse
 from users.forms import UserRegistrationForm, UserLoginForm
+from django.contrib.auth import login, logout
 
 
 class UserCreationView(CreateView):
     form_class = UserRegistrationForm
     template_name = 'register.html'
-    success_url = '/'
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        user = self.object
+        login(self.request, user)
+        messages.success(self.request, f'Добро пожаловать, {user.username}!')
+        return response
+
+    def get_success_url(self):
+
+        return reverse('products:products_list')
 
 
 # class UserLoginView(CreateView):
@@ -17,4 +29,7 @@ class UserCreationView(CreateView):
 
 class AccountView(TemplateView):
     template_name = 'account.html'
+
+
+
 

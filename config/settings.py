@@ -100,3 +100,6 @@ PRODUCT_QUERY_STRING_MAP = {
     'price_asc' : 'price',
     'price_desc' : '-price',
 }
+LOGOUT_REDIRECT_URL = 'products:products_list'
+LOGIN_URL = 'products:products_list'
+LOGIN_REDIRECT_URL = 'products:products_list'

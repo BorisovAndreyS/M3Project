@@ -19,6 +19,11 @@
 </head>
 <body class="{% if user.is_authenticated %}user-logged-in{% endif %}">
 <!-- Header -->
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
 <header>
     <div class="header-container">
         <a href="{% url 'products:products_list' %}" class="header__logo">
