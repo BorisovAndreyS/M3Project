@@ -1980,3 +1980,44 @@ body.user-logged-in .header__user-actions {
     height: 44px;
     padding: 0 32px;
 }
+.cart-icon {
+    position: relative;  /* Обязательно для позиционирования бейджа */
+    display: inline-block;
+}
+
+.cart-badge {
+    position: absolute;
+    top: -8px;           /* Сдвиг вверх */
+    right: -8px;         /* Сдвиг вправо */
+    background-color: #e74c3c;  /* Красный цвет */
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;  /* Круглая форма */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    line-height: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+/* Анимация при обновлении */
+.cart-badge.pulse {
+    animation: pulse 0.3s ease-in-out;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Если товаров 0 — скрываем бейдж */
+.cart-badge[data-count="0"],
+.cart-badge:empty {
+    display: none;
+}

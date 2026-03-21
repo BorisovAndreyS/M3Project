@@ -33,7 +33,7 @@ def get_or_create_cart(request):
 
     if request.session.session_key:
         old_cart = Cart.objects.filter(
-            session_key=request.session_key,
+            session_key=request.session.session_key,
             user__isnull=True
         ).first()
         if old_cart and old_cart != cart:

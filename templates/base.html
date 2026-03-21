@@ -17,7 +17,7 @@
     <!-- Link to your main CSS file -->
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
 </head>
-<body>
+<body class="{% if user.is_authenticated %}user-logged-in{% endif %}">
 <!-- Header -->
 <header>
     <div class="header-container">
@@ -42,7 +42,11 @@
             </a>
             <a href="{% url 'orders:cart_detail' %}" class="cart-icon" aria-label="Shopping Cart">
                 <img src="{% static 'img/icons/Shopping_bag.svg' %}" alt="Shopping Cart">
+                <span class="cart-badge" id="cart-badge">
+                    {{ cart_total_quantity|default:0 }}
+                </span>
             </a>
+        </div>
         {% else %}
             <!-- Block for unauthorized user -->
         <div class="header__auth-buttons" id="auth-guest">
@@ -51,7 +55,6 @@
         </div>
         {% endif %}
 
-        </div>
     </div>
 </header>
 
