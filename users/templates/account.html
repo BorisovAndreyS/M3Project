@@ -137,30 +137,62 @@
       <div id="account-info" class="tab-pane">
         <div class="account-form-container">
           <h2 class="account-form-title">Personal Info</h2>
-          <form id="account-info-form">
-            <div class="checkout-form-group">
-              <label for="acc-full-name">Full Name</label>
-              <input type="text" id="acc-full-name" name="full_name" class="Input" placeholder="Value" required>
+          <form id="account-info-form" enctype="multipart/form-data" method="post" action="{% url 'users:update' %}">
+            {% csrf_token %}
+            <div class="profile-layout">
+              <div class="photo-area">
+                  <div class="checkout-form-group">
+                      <label>Profile Photo</label>
+                      <div class = "photo-upload-container">
+                        {% if user.image %}
+                          <img src="{{ user.image.url }}" alt="Profile Photo" class="profile-photo-preview">
+                        {% else %}
+                          <img src="{% static '../media/profile_images/default.png' %}" alt="Default Photo" class="profile-photo-preview">
+                        {% endif %}
+                        <label for="id_image" class="button button--primary button--full-width">
+                          📷 Change Photo
+                        </label>
+                        <input type="file" id="id_image" name="image" accept="image/*" style="display: none;">
+                      </div>
+                    </div>
+              </div>
+              <div class="fields-area">
+                  <div class="checkout-form-group">
+                      <label for="acc-first-name">First Name</label>
+                      <input type="text" id="acc-first-name" name="first_name"
+                             class="Input" placeholder="first_name" value="{{ user.first_name }}" required>
+                    </div>
+                    <div class="checkout-form-group">
+                      <label for="acc-last-name">Last Name</label>
+                      <input type="text" id="acc-last-name" name="last_name"
+                             class="Input" placeholder="last_name" value="{{ user.last_name }}" required>
+                    </div>
+                    <div class="checkout-form-group">
+                      <label for="acc-phone">Phone number</label>
+                      <input type="tel" id="acc-phone" name="phone"
+                     class="Input" placeholder="Value" value="{{ user.phone }}" required>
+                    </div>
+                    <div class="checkout-form-group">
+                      <label for="acc-email">Email</label>
+                      <input type="email" id="acc-email" name="email"
+                      class="Input" placeholder="example@mail.com" value="{{ user.email }}" required>
+                    </div>
+              </div>
             </div>
-            <div class="checkout-form-group">
-              <label for="acc-phone">Phone number</label>
-              <input type="tel" id="acc-phone" name="phone" class="Input" placeholder="Value" required>
-            </div>
-            <div class="checkout-form-group">
-              <label for="acc-email">Email</label>
-              <input type="email" id="acc-email" name="email" class="Input" placeholder="example@mail.com" required>
-            </div>
+
             <div class="checkout-form-group">
               <label for="acc-city">City</label>
-              <input type="text" id="acc-city" name="city" class="Input" placeholder="Value" required>
+              <input type="text" id="acc-city" name="city"
+                     class="Input" placeholder="Value" value="{{ user.city }}" required>
             </div>
             <div class="checkout-form-group">
               <label for="acc-address">Shipping address</label>
-              <textarea id="acc-address" name="address" class="Textarea" placeholder="Value" rows="3" required></textarea>
+              <textarea id="acc-address" name="address"
+                        class="Textarea" placeholder="{{ user.address }}"  rows="3" required>{{ user.address }}</textarea>
             </div>
             <button type="submit" class="button button--primary button--full-width">Save</button>
           </form>
-          <form action = "/users/logout/" method = "post">
+          <form action = "{% url 'users:logout' %}" method = "post">
               {% csrf_token %}
               <button  class="button button--secondary button--full-width" id="logout-button">Logout</button>
           <form>

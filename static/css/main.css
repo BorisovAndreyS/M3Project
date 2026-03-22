@@ -154,6 +154,7 @@ header {
     border-color: var(--dark-green);
 }
 
+
 /* Hero Banner */
 .hero-banner {
     position: relative;
@@ -1347,6 +1348,10 @@ body.user-logged-in .header__user-actions {
     font-weight: 500;
 }
 
+.checkout-form-group .button--primary {
+    color: white;
+}
+
 .Textarea {
     width: 100%;
     padding: 12px 16px;
@@ -2020,4 +2025,25 @@ body.user-logged-in .header__user-actions {
 .cart-badge[data-count="0"],
 .cart-badge:empty {
     display: none;
+}
+
+.profile-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+.photo-area {
+    flex: 0 0 200px;  /* фиксированная ширина фото-зоны */
+}
+
+.fields-area {
+    flex: 1;  /* занимает оставшееся пространство */
+}
+
+.profile-photo-preview {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }

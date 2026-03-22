@@ -1,8 +1,10 @@
 from django.contrib import messages
-from django.views.generic import CreateView, FormView, TemplateView
-from django.urls import reverse
-from users.forms import UserRegistrationForm, UserLoginForm
+from django.views.generic import CreateView, FormView, TemplateView, UpdateView
+from django.urls import reverse, reverse_lazy
+from users.forms import UserRegistrationForm, UserLoginForm, ProfileForm
 from django.contrib.auth import login, logout
+
+from users.models import User
 
 
 class UserCreationView(CreateView):
@@ -21,14 +23,30 @@ class UserCreationView(CreateView):
         return reverse('products:products_list')
 
 
-# class UserLoginView(CreateView):
-#     form_class = UserLoginForm
-#     template_name = 'login.html'
-#     success_url = '/'
-
 
 class AccountView(TemplateView):
     template_name = 'account.html'
+
+class ProfileFormView(UpdateView):
+    model = User
+    form_class = ProfileForm
+    template_name = 'account.html'
+    success_url = reverse_lazy('users:account')
+
+
+    def get_object(self):
+        return self.request.user
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        request = self.request
+        messages.success(request, f'Профиль обновлен!')
+        return response
+
+
+
+
+
 
 
 

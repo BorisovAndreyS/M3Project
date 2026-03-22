@@ -13,6 +13,7 @@ urlpatterns = [
                                      success_url='products:products_list',
                                      ), name='login'),
     path('account/', views.AccountView.as_view(), name='account'),
-    path('logout/', LogoutView.as_view(next_page = '/', )),
+    path('logout/', LogoutView.as_view(next_page = '/', ),  name = 'logout'),
+    path('update/', views.ProfileFormView.as_view(), name='update'),
 ]
 

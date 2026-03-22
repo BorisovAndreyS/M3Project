@@ -50,3 +50,26 @@ class UserLoginForm(forms.Form):
         super().__init__(request, *args, **kwargs)
 
         self.fields['username'].label = 'Email'
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'phone', 'email', 'city', 'address', 'image']
+        widgets = {
+            'first_name': forms.TextInput(attrs={'placeholder': 'Your name', 'class': 'Input'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Your last name', 'class': 'Input'}),
+            'phone': forms.TextInput(attrs={'placeholder': 'Your phone', 'class':'Input' }),
+            'email': forms.EmailInput(attrs={'placeholder': 'example@gmail.com', 'class': 'Input'}),
+            'city': forms.TextInput(attrs={'placeholder': 'Your city', 'class':'Input' }),
+            'address': forms.TextInput(attrs={'placeholder': 'Your address', 'class':'Input' }),
+        }
+        labels = {
+            'first_name': 'First name',
+            'last_name': 'Last name',
+            'phone': 'Phone',
+            'email': 'Email',
+            'city': 'City',
+            'address': 'Address',
+            'image' : 'Image',
+        }
