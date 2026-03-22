@@ -1,11 +1,9 @@
 from django.db.models import Avg, Q
-from django.db.models.query_utils import select_related_descend
-from django.shortcuts import render
 from django.views.generic import DetailView, TemplateView, ListView
 
 from orders.models import CartItem
 from orders.services import get_or_create_cart
-from products.models import Product, Review, Category
+from products.models import Product, Review, Category, ProductSpecification
 from config.settings import PRODUCT_QUERY_STRING_MAP
 
 
@@ -24,16 +22,16 @@ class ProductDetailView(DetailView):
         cart = get_or_create_cart(self.request)
         cart_item = CartItem.objects.filter(
             cart=cart,
-            product = self.object
+            product=self.object
         ).first()
         context['quantity_in_cart'] = cart_item.quantity if cart_item else 0
         context['cart_item'] = cart_item
+        context['specs'] = ProductSpecification.objects.filter(product=self.object)
         return context
 
 
 class ProductListView(ListView):
     template_name = 'products/product-list.html'
-    # queryset = Product.objects.filter(is_active=True)
     context_object_name = 'products'
     paginate_by = 3
 
@@ -42,45 +40,35 @@ class ProductListView(ListView):
             .select_related('category') \
             .annotate(avg_rating=Avg('review__rating'))
 
-        #filter by category_WORK
+        # filter by category_WORK
         categories = self.request.GET.get('category', None)
         if categories:
-            qs = qs.filter(category__id__in = categories.split(','))
-
+            qs = qs.filter(category__id__in=categories.split(','))
 
         # search
         to_search = self.request.GET.get('q', None)
         if to_search:
             qs = qs.filter(Q(name__icontains=to_search) | Q(description__icontains=to_search))
 
-
-
-
-        #sort_work
         qs_key = self.request.GET.get('sort', 'new')
 
         qs = qs.order_by(PRODUCT_QUERY_STRING_MAP[qs_key])
-
-        # if sort == 'price':
-        #     qs = qs.order_by('price')
-        # elif sort == 'rating':
-        #     qs = qs.order_by('-avg_rating')
 
         return list(qs)
 
     def get_context_data(self, *, object_list=..., **kwargs):
         context = super().get_context_data(**kwargs)
 
-        #Категории для слайдера
+        # Категории для слайдера
         context['categories'] = Category.objects.all()
 
-        #Выбранные категории
+        # Выбранные категории
         context['select_category'] = self.request.GET.getlist('category')
 
-        #Текущая сортировка
+        # Текущая сортировка
         context['current_sort'] = self.request.GET.get('sort', 'new')
 
-        #Сохраняем параметры GET без page
+        # Сохраняем параметры GET без page
         context['get_params'] = self.request.GET.copy()
         if 'page' in context['get_params']:
             context['get_params'].pop('page')

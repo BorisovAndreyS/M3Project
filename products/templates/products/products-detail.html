@@ -12,12 +12,12 @@
                 <div class="product-title-price">
                     <h1 class="product-name">{{ product.name }}</h1>
                     <div class="price-section">
-                        <span class="price-tag">per 1 lb</span>
+                        <span class="price-tag">per {{ product.unit }}</span>
                         <p class="product-price">${{ product.price }}</p>
                     </div>
                 </div>
                 <div class="product-description">
-                    <p>{{ product.description }}</p>
+                    <p>{{ product.description|linebreaks }}</p>
                 </div>
 
                 <div class="cart-controls"
@@ -56,16 +56,11 @@
                 </div>
                 <div class="accordion-content">
                     <ul>
-                        <li><strong>Origin:</strong> USA / Belgium</li>
-                        <li><strong>Type:</strong> Crystal/Caramel Malt</li>
-                        <li><strong>Color (°L):</strong> 60 °L</li>
-                        <li><strong>Moisture:</strong> 5.0% max</li>
-                        <li><strong>Extract FG, Dry:</strong> 75%</li>
-                        <li><strong>Flavor Profile:</strong> Sweet, caramel, toffee, hints of toasted bread</li>
-                        <li><strong>Usage:</strong> Typically 3-15% of the grist</li>
-                        <li><strong>Recommended Beer Styles:</strong> Pale Ale, Amber Ale, IPA, Brown Ale, Porter,
-                            Stout, Scotch Ale
-                        </li>
+                        {% for spec in specs %}
+                        <li><strong>{{ spec.spec_type }}:</strong> {{ spec.value }}</li>
+                        {% empty %}
+                        <li><strong>No spec found</strong></li>
+                        {% endfor %}
                     </ul>
                 </div>
             </div>
