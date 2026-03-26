@@ -76,6 +76,12 @@ class Review(JournalizedModel):
     comment = models.TextField(max_length=1000)
     detail = models.TextField(blank=True,)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_published = models.BooleanField(default=False)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'product'], name='unique_user_product')
+        ]
 
 
     def __str__(self):

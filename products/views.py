@@ -1,5 +1,8 @@
+from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Q
+from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import DetailView, TemplateView, ListView
+from .forms import ReviewsForm
 
 from orders.models import CartItem
 from orders.services import get_or_create_cart
@@ -27,6 +30,7 @@ class ProductDetailView(DetailView):
         context['quantity_in_cart'] = cart_item.quantity if cart_item else 0
         context['cart_item'] = cart_item
         context['specs'] = ProductSpecification.objects.filter(product=self.object)
+        context['form'] = ReviewsForm()
         return context
 
 
@@ -78,3 +82,20 @@ class ProductListView(ListView):
 
 class GuidesView(TemplateView):
     template_name = 'guides-recipes.html'
+
+@login_required
+def add_review(request, slug):
+    product = get_object_or_404(Product, slug=slug)
+
+    review = Review.objects.filter(product=product, user=request.user).first()
+    if request.method == 'POST':
+        form = ReviewsForm(request.POST, instance=review) #Если есть редактируем
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.product = product
+            review.user = request.user
+            review.save()
+            return redirect('products:product', slug=product.slug)
+        else:
+            form = ReviewsForm(instance=review)
+        return render(request, 'products/products-detail.html', {'form':form, 'product':product})

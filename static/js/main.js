@@ -108,7 +108,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const cartControls = document.querySelector('.cart-controls');
         if (cartControls) {
             const addToCartBtn = cartControls.querySelector('#add-to-cart-btn');
-            console.log('🔍 addToCartBtn found:', addToCartBtn);
             const quantityCounter = cartControls.querySelector('#quantity-counter');
             const decreaseBtn = quantityCounter.querySelector('[data-action="decrease"]');
             const increaseBtn = quantityCounter.querySelector('[data-action="increase"]');
@@ -206,6 +205,74 @@ document.addEventListener('DOMContentLoaded', function() {
             updateView();
         }
     }
+
+//    Button add reviews
+//    console.log('🔍 Кнопка:', document.getElementById('open-review-modal'));
+//    console.log('🔍 Модалка:', document.getElementById('review-modal'));
+    const modal = document.getElementById('review-modal');
+    const openBtn = document.getElementById('open-review-modal');
+    const closeBtn = document.querySelector('.close');
+    const form = document.querySelector('#review-modal form');
+
+    openBtn?.addEventListener('click', () => modal.classList.add('active'));
+    closeBtn?.addEventListener('click', () => modal.classList.remove('active'));
+    modal?.addEventListener('click', (e) => {
+        if (e.target === modal) modal.classList.remove('active');
+    });
+
+    console.log('🔍 Form найдена:', form);
+    form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    console.log('🔍 CSRF в formData:', formData.get('csrfmiddlewaretoken'));
+    const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+
+    });
+    if (response.ok) {
+        console.log('✅ Успех!');
+        modal.classList.remove('active');
+        window.location.reload();
+        // ← Обновить список отзывов на странице
+    } else {
+    console.error('❌ Ошибка:', response.status);
+    }
+    });
+
+    // Звёздный рейтинг
+    console.log('Звезд найдено!:', document.querySelectorAll('.star').length);
+
+    document.querySelectorAll('.star-rating').forEach(container => {
+
+        const input = container.querySelector('input[type="hidden"]');
+        console.log('🔍 Поиск .star-rating...');
+        const starsContainer = container.querySelector('.stars');
+        console.log('starsContainer type:', typeof starsContainer, starsContainer);
+
+        starsContainer?.addEventListener('click', (e) => {
+            console.log('🎯 Клик по:', e.target);
+            console.log('🎯 Классы:', e.target.classList);
+            if (!e.target.classList.contains('star')){
+                console.log('❌ Клик не по звезде');
+                return;
+            }
+            const value = e.target.dataset.value;
+            console.log('✅ Клик по звезде!', e.target.dataset.value);
+            input.value = value;
+
+            const allStars = container.querySelectorAll('.star');
+            allStars.forEach(s => {
+                const sVal = parseInt(s.dataset.value);
+                const v = parseInt(value);
+                s.classList.toggle('active', sVal <= v);
+            });
+
+            });
+
+    });
+
+
 
     // --- Logic for Cart Page (cart.html) ---
     const cartPageContent = document.querySelector('.cart-page-wrapper');

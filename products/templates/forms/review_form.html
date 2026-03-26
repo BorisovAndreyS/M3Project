@@ -1,0 +1,34 @@
+<div id="review-modal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Оставить отзыв</h3>
+        <form method="post" action="{% url 'products:add_review' product.slug %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.rating.id_for_label }}">Rating:</label>
+                <div class="star-rating">
+                    <input type="hidden" name="{{ form.rating.name }}" id="{{ form.rating.id_for_label }}"
+                           value="{{ form.rating.value }}">
+                    <div class="stars">
+                        {% for i in "54321"|make_list %}
+                        <span class="star" data-value="{{ i }}">★</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="{{ form.comment.id_for_label }}">Comment:</label>
+                {{ form.comment }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.detail.id_for_label }}">Detail:</label>
+                {{ form.detail }}
+            </div>
+
+            <button type="submit" class="button button--primary">
+                <i class="fa-solid fa-paper-plane"></i>
+                Отправить отзыв
+            </button>
+        </form>
+    </div>
+</div>

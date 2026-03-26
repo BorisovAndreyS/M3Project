@@ -1,5 +1,4 @@
 from django.contrib.auth.forms import UserCreationForm, forms
-# from django.forms import forms
 
 from users.models import User
 
@@ -9,14 +8,14 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ['email', 'username', 'first_name', 'last_name', 'password1', 'password2']
         widgets = {
-            'email': forms.EmailInput(attrs={'placeholder': 'example@gmail.com', 'class':'Input'}),
-            'username': forms.TextInput(attrs={'placeholder': 'Your username', 'class':'Input'}),
-            'first_name': forms.TextInput(attrs={'placeholder': 'Your name', 'class':'Input'}),
-            'last_name': forms.TextInput(attrs={'placeholder': 'Your last name', 'class':'Input'}),
-            'password1': forms.PasswordInput(attrs={'placeholder':'qwerty123', 'class':'Input'}),
-            'password2': forms.PasswordInput(attrs={'placeholder':'qwerty123', 'class':'Input'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'example@gmail.com', 'class': 'Input'}),
+            'username': forms.TextInput(attrs={'placeholder': 'Your username', 'class': 'Input'}),
+            'first_name': forms.TextInput(attrs={'placeholder': 'Your name', 'class': 'Input'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'Your last name', 'class': 'Input'}),
+            'password1': forms.PasswordInput(attrs={'placeholder': 'qwerty123', 'class': 'Input'}),
+            'password2': forms.PasswordInput(attrs={'placeholder': 'qwerty123', 'class': 'Input'}),
         }
-        labels={
+        labels = {
             'email': 'Email',
             'username': 'Username',
             'first_name': 'First name',
@@ -24,9 +23,10 @@ class UserRegistrationForm(UserCreationForm):
             'password1': 'Password',
             'password2': 'Confirm Password',
         }
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if User.objects.filter(email = email).exists():
+        if User.objects.filter(email=email).exists():
             raise forms.ValidationError('This email is alread in use')
         return email
 
@@ -44,7 +44,7 @@ class UserLoginForm(forms.Form):
         attrs={'palceholder': 'example@gmail.com', 'class': 'Input'}))
 
     password = forms.CharField(widget=forms.PasswordInput(
-        attrs={'placeholder':'qwerty123', 'class': 'Input'}))
+        attrs={'placeholder': 'qwerty123', 'class': 'Input'}))
 
     def __init__(self, request=None, *args, **kwargs):
         super().__init__(request, *args, **kwargs)
@@ -59,10 +59,10 @@ class ProfileForm(forms.ModelForm):
         widgets = {
             'first_name': forms.TextInput(attrs={'placeholder': 'Your name', 'class': 'Input'}),
             'last_name': forms.TextInput(attrs={'placeholder': 'Your last name', 'class': 'Input'}),
-            'phone': forms.TextInput(attrs={'placeholder': 'Your phone', 'class':'Input' }),
+            'phone': forms.TextInput(attrs={'placeholder': 'Your phone', 'class': 'Input'}),
             'email': forms.EmailInput(attrs={'placeholder': 'example@gmail.com', 'class': 'Input'}),
-            'city': forms.TextInput(attrs={'placeholder': 'Your city', 'class':'Input' }),
-            'address': forms.TextInput(attrs={'placeholder': 'Your address', 'class':'Input' }),
+            'city': forms.TextInput(attrs={'placeholder': 'Your city', 'class': 'Input'}),
+            'address': forms.TextInput(attrs={'placeholder': 'Your address', 'class': 'Input'}),
         }
         labels = {
             'first_name': 'First name',
@@ -71,5 +71,5 @@ class ProfileForm(forms.ModelForm):
             'email': 'Email',
             'city': 'City',
             'address': 'Address',
-            'image' : 'Image',
+            'image': 'Image',
         }
