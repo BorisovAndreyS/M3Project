@@ -15,7 +15,7 @@ from django.views.generic import DetailView, TemplateView
 def update_cart_item(request, itemid):
     product_cart_itemid = CartItem.objects.get(id=itemid)
     cart = product_cart_itemid.cart
-    print(request.user.is_authenticated)
+    # print(request.user.is_authenticated)
     is_ajax = request.content_type == 'application/json'
 
     if request.method == 'POST' and is_ajax:
@@ -33,12 +33,14 @@ def update_cart_item(request, itemid):
 
         if request.user.is_authenticated:
             if cart.user == request.user:
+                print(product_cart_itemid.quantity)
                 product_cart_itemid.quantity = target_quantity
                 product_cart_itemid.save()
             else:
                 print('Корзина не Ваша')
         else:
             if cart.session_key == request.session.session_key:
+                print(product_cart_itemid.quantity)
                 product_cart_itemid.quantity = target_quantity
                 product_cart_itemid.save()
             else:
@@ -93,6 +95,9 @@ def add_to_cart(request, product_slug):
     #Если обычный запрос, редирект и сообщение
     messages.success(request, f'Товар {product.name} добавлен в корзину')
     return redirect(request.META.get('HTTP_REFERER', 'products:product_list'))
+
+
+
 
 class CartDetailView(TemplateView):
     template_name = 'orders/cart.html'
