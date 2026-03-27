@@ -1,31 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-//    // --- General logic for all pages (Login/Logout Simulation) ---
-//    const loginForm = document.getElementById('login-form');
-//    const logoutButton = document.getElementById('logout-button');
-//    function checkLoginStatus() {
-//        if (localStorage.getItem('isLoggedIn') === 'true') {
-//            document.body.classList.add('user-logged-in');
-//        } else {
-//            document.body.classList.remove('user-logged-in');
-//        }
-//    }
-//    if (loginForm) {
-//        loginForm.addEventListener('submit', function(e) {
-//            e.preventDefault();
-//            localStorage.setItem('isLoggedIn', 'true');
-//            const nextUrl = new URLSearchParams(window.location.search).get('next');
-//            window.location.href = nextUrl || 'home.html';
-//        });
-//    }
-//    if (logoutButton) {
-//        logoutButton.addEventListener('click', function(e) {
-//            e.preventDefault();
-//            localStorage.removeItem('isLoggedIn');
-//            window.location.href = 'home.html';
-//        });
-//    }
-//    checkLoginStatus();
 
 
     // --- Logic for the Main Page (home.html) ---
@@ -212,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const modal = document.getElementById('review-modal');
     const openBtn = document.getElementById('open-review-modal');
     const closeBtn = document.querySelector('.close');
-    const form = document.querySelector('#review-modal form');
+    const formModal = document.querySelector('#review-modal form');
 
     openBtn?.addEventListener('click', () => modal.classList.add('active'));
     closeBtn?.addEventListener('click', () => modal.classList.remove('active'));
@@ -220,18 +194,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === modal) modal.classList.remove('active');
     });
 
-    console.log('🔍 Form найдена:', form);
-    form.addEventListener('submit', async (e) => {
+    console.log('🔍 Form найдена:', formModal);
+    if (formModal){
+    formModal.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const formData = new FormData(form);
-    console.log('🔍 CSRF в formData:', formData.get('csrfmiddlewaretoken'));
-    const response = await fetch(form.action, {
+    const formData = new FormData(formModal);
+//    console.log('🔍 CSRF в formData:', formData.get('csrfmiddlewaretoken'));
+    const response = await fetch(formModal.action, {
         method: 'POST',
         body: formData,
 
     });
+
     if (response.ok) {
-        console.log('✅ Успех!');
+//        console.log('✅ Успех!');
         modal.classList.remove('active');
         window.location.reload();
         // ← Обновить список отзывов на странице
@@ -239,26 +215,26 @@ document.addEventListener('DOMContentLoaded', function() {
     console.error('❌ Ошибка:', response.status);
     }
     });
-
+    }
     // Звёздный рейтинг
-    console.log('Звезд найдено!:', document.querySelectorAll('.star').length);
+//    console.log('Звезд найдено!:', document.querySelectorAll('.star').length);
 
     document.querySelectorAll('.star-rating').forEach(container => {
 
         const input = container.querySelector('input[type="hidden"]');
-        console.log('🔍 Поиск .star-rating...');
+//        console.log('🔍 Поиск .star-rating...');
         const starsContainer = container.querySelector('.stars');
-        console.log('starsContainer type:', typeof starsContainer, starsContainer);
+//        console.log('starsContainer type:', typeof starsContainer, starsContainer);
 
         starsContainer?.addEventListener('click', (e) => {
-            console.log('🎯 Клик по:', e.target);
-            console.log('🎯 Классы:', e.target.classList);
+//            console.log('🎯 Клик по:', e.target);
+//            console.log('🎯 Классы:', e.target.classList);
             if (!e.target.classList.contains('star')){
-                console.log('❌ Клик не по звезде');
+//                console.log('❌ Клик не по звезде');
                 return;
             }
             const value = e.target.dataset.value;
-            console.log('✅ Клик по звезде!', e.target.dataset.value);
+//            console.log('✅ Клик по звезде!', e.target.dataset.value);
             input.value = value;
 
             const allStars = container.querySelectorAll('.star');
@@ -280,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const cartItemsList = document.getElementById('cart-items-list');
         const cartTotalPriceElem = document.getElementById('cart-total-price');
         function updateCartTotal() {
-            console.log('Я тут!!!')
+//            console.log('Я тут!!!')
             let total = 0;
             document.querySelectorAll('.cart-item').forEach(item => {
                 const priceText = item.querySelector('[data-item-total-price]').textContent;
@@ -344,11 +320,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const updateUrl = cartItem.dataset.updateUrl;
                 //console.log('[updateUrl]', updateUrl);
                 const quantityElem = cartItem.querySelector('.quantity-value-cart');
-                console.log('[.quantity-value-cart]', quantityElem);
+//                console.log('[.quantity-value-cart]', quantityElem);
                 const itemTotalElem = cartItem.querySelector('[data-item-total-price]');
-                console.log('[data-item-total-price]', itemTotalElem);
+//                console.log('[data-item-total-price]', itemTotalElem);
                 const basePrice = parseFloat(cartItem.dataset.price);
-                console.log('[cartItem.dataset.price]', basePrice);
+//                console.log('[cartItem.dataset.price]', basePrice);
                 let quantity = parseInt(quantityElem.textContent);
                 //console.log('let quantity', quantity)
 
@@ -379,7 +355,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (success){
                       quantityElem.textContent = newQty;
-                      console.log("[newQty]", newQty)
+//                      console.log("[newQty]", newQty)
                       itemTotalElem.textContent = `$${(basePrice * newQty).toFixed(2)}`;
                       if (newQty === 0){
                         cartItem.remove();
