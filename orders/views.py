@@ -70,9 +70,9 @@ def add_to_cart(request, product_slug):
     cart = get_or_create_cart(request)
     product_stock = product.stock
 
+    is_ajax = request.content_type == 'application/json'
 
-
-    if request.content_type == 'application/json':
+    if is_ajax:
         data = json.loads(request.body)
         target_quantity = int(data.get('quantity', 1))
     else:

@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.target === modal) modal.classList.remove('active');
     });
 
-    console.log('🔍 Form найдена:', formModal);
+
     if (formModal){
     formModal.addEventListener('submit', async (e) => {
     e.preventDefault();
