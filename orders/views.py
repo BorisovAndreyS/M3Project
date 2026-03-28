@@ -14,6 +14,8 @@ from django.views.generic import DetailView, TemplateView
 # Create your views here.
 def update_cart_item(request, itemid):
     product_cart_itemid = CartItem.objects.get(id=itemid)
+    product_stock_total = product_cart_itemid.product.stock
+    quantity = product_cart_itemid.quantity
     cart = product_cart_itemid.cart
     # print(request.user.is_authenticated)
     is_ajax = request.content_type == 'application/json'
@@ -21,6 +23,15 @@ def update_cart_item(request, itemid):
     if request.method == 'POST' and is_ajax:
         data = json.loads(request.body)
         target_quantity = int(data.get('quantity'))
+        if target_quantity > product_stock_total:
+            target_quantity = quantity
+            return JsonResponse({
+                'success': False,
+                'message': f'Доступно только {product_cart_itemid.product.stock}',
+                'quantity': target_quantity,
+            })
+
+
 
         if target_quantity == 0:
             product_cart_itemid.delete()
@@ -33,21 +44,18 @@ def update_cart_item(request, itemid):
 
         if request.user.is_authenticated:
             if cart.user == request.user:
-                print(product_cart_itemid.quantity)
                 product_cart_itemid.quantity = target_quantity
                 product_cart_itemid.save()
             else:
                 print('Корзина не Ваша')
         else:
             if cart.session_key == request.session.session_key:
-                print(product_cart_itemid.quantity)
                 product_cart_itemid.quantity = target_quantity
                 product_cart_itemid.save()
             else:
                 print('Корзина не ваша')
 
 
-        quantity = product_cart_itemid.quantity
         # Если AJAX запрос - возвращаем JSON
         if is_ajax:
             return JsonResponse({
@@ -60,14 +68,22 @@ def update_cart_item(request, itemid):
 def add_to_cart(request, product_slug):
     product = get_object_or_404(Product, slug=product_slug, is_active = True, )
     cart = get_or_create_cart(request)
+    product_stock = product.stock
 
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
-    if is_ajax and request.content_type == 'application/json':
+
+    if request.content_type == 'application/json':
         data = json.loads(request.body)
         target_quantity = int(data.get('quantity', 1))
     else:
         target_quantity = 1
+
+    if target_quantity > product_stock:
+        return JsonResponse({
+            'success': False,
+            'message': f'Доступно только {product.stock}',
+            'quantity': target_quantity,
+        })
 
     if target_quantity == 0:
         CartItem.objects.filter(cart=cart, product=product).delete()
