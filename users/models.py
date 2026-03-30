@@ -1,6 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from .validaters import validate_phone
+from validaters.validaters import validate_phone
 
 # Create your models here.
 class User(AbstractUser):

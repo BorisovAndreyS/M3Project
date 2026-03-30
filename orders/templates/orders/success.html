@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Main Content -->
+<main class="checkout-page-wrapper">
+    <div class="checkout-container">
+        
+        <!-- Success Header -->
+        <div class="success-header" style="text-align: center; margin-bottom: 2rem;">
+            <i class="fa-solid fa-circle-check" style="font-size: 4rem; color: var(--dark-green); margin-bottom: 1rem;"></i>
+            <h1 class="checkout-title">Thank You for Your Order!</h1>
+            <p class="success-message">Your order #{{ order.id }} has been received</p>
+        </div>
+
+        <!-- Order Confirmation -->
+        <section class="checkout-section">
+            <h2 class="checkout-section__title">Order Confirmation</h2>
+            
+            <div class="order-details-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                <div>
+                    <p><strong>Order Number:</strong> #{{ order.id }}</p>
+                    <p><strong>Order Date:</strong> {{ order.created_at|date:"M d, Y H:i" }}</p>
+                </div>
+                <div>
+                    <p><strong>Payment Method:</strong> {{ order.get_payment_method_display }}</p>
+                    <p><strong>Status:</strong> <span class="status-badge">{{ order.get_status_display }}</span></p>
+                </div>
+            </div>
+
+            <div class="alert-box" style="background: var(--background-default); padding: 1rem; border-radius: 8px; margin-bottom: 1.5rem;">
+                <i class="fa-solid fa-envelope"></i>
+                <span>A confirmation email has been sent to <strong>{{ order.email }}</strong></span>
+            </div>
+        </section>
+
+        <!-- Shipping Information -->
+        <section class="checkout-section">
+            <h2 class="checkout-section__title">Shipping Information</h2>
+            <div class="shipping-details">
+                <p><strong>{{ order.first_name }} {{ order.last_name }}</strong></p>
+                <p>{{ order.address }}</p>
+                <p>{{ order.city }}</p>
+                <p>{{ order.phone }}</p>
+            </div>
+        </section>
+
+        <!-- Order Items -->
+        <section class="checkout-section">
+            <h2 class="checkout-section__title">Order Items</h2>
+            
+            <div class="order-items-list" style="border: 1px solid var(--border-default); border-radius: 8px; overflow: hidden;">
+                {% for item in order.items.all %}
+                <div class="order-item-row" style="display: flex; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--border-default); {% if forloop.last %}border-bottom: none{% endif %}">
+                    <div>
+                        <p style="font-weight: 600;">{{ item.product_name }}</p>
+                        <p style="font-size: 0.875rem; color: var(--grey-text);">Qty: {{ item.quantity }}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p>${{ item.price }}</p>
+                        <p style="font-size: 0.875rem; color: var(--grey-text);">Total: ${{ item.total_price }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <!-- Order Total -->
+        <section class="checkout-summary">
+            <h2 class="checkout-section__title">Order Total</h2>
+            <div class="summary-details">
+                <div class="summary-total">
+                    <p>Grand Total</p>
+                    <p style="font-size: 1.5rem; font-weight: 700; color: var(--dark-green);">${{ order.total_price }}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="success-actions" style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+            <a href="{% url 'products:products_list' %}" class="button button--primary">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Continue Shopping</span>
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'users:account' %}" class="button button--secondary">
+                <i class="fa-solid fa-list"></i>
+                <span>View Order History</span>
+            </a>
+            {% endif %}
+        </div>
+
+    </div>
+</main>
+
+{% endblock %}
