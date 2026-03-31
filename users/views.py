@@ -1,6 +1,8 @@
 from django.contrib import messages
-from django.views.generic import CreateView, FormView, TemplateView, UpdateView
+from django.views.generic import CreateView, FormView, TemplateView, UpdateView, ListView
 from django.urls import reverse, reverse_lazy
+
+from orders.models import Order
 from users.forms import UserRegistrationForm, UserLoginForm, ProfileForm
 from django.contrib.auth import login, logout
 
@@ -24,13 +26,16 @@ class UserCreationView(CreateView):
 
 
 
-class AccountView(TemplateView):
+class AccountView(ListView):
     template_name = 'account.html'
+    model = Order
+    context_object_name = 'orders'
+    paginate_by = 3
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['orders'] = self.request.user.user_order.all()
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['orders'] = self.request.user.user_order.all()
+    #     return context
 
 class ProfileFormView(UpdateView):
     model = User
