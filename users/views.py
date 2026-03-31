@@ -27,6 +27,11 @@ class UserCreationView(CreateView):
 class AccountView(TemplateView):
     template_name = 'account.html'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['orders'] = self.request.user.user_order.all()
+        return context
+
 class ProfileFormView(UpdateView):
     model = User
     form_class = ProfileForm
