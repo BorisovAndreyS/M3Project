@@ -1575,6 +1575,10 @@ body.user-logged-in .header__user-actions {
     pointer-events: none;
 }
 
+.pagination-link-account:last-child {
+    margin-left: auto;
+}
+
 
 /*
 ========================================
