@@ -2122,3 +2122,63 @@ body.user-logged-in .header__user-actions {
     background: #047857;
     height: 40px;
 }
+
+.messages-container {
+    position: fixed;
+    top: 100px;
+    left: 2rem;
+    z-index: 1000;
+}
+
+.alert {
+    padding: 0.75rem 2.5rem 0.75rem 2.5rem;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    max-width: calc(100vw - 4rem);
+    position: relative;
+}
+
+.alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border-left: 3px solid #dc3545;
+    font-size: 0.9rem;
+}
+
+.alert-success {
+    background: #d4edda;
+    color: #155724;
+    border-left: 3px solid #28a745;
+    font-size: 0.9rem;
+}
+
+.alert-close {
+    position: absolute;
+    top: 50%;
+    right: 0.75rem;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: inherit;
+    opacity: 0.6;
+    padding: 0.25rem;
+    line-height: 1;
+    width: auto;
+    height: auto;
+}
+
+.alert-close:hover {
+    opacity: 1;
+}
+
+/* Анимация исчезновения */
+.alert.fade-out {
+    opacity: 0;
+    transform: translateY(-10px);
+}

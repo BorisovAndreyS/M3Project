@@ -118,6 +118,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!response.ok) throw new Error('Server error');
 
                     const data = await response.json();
+                    const cartBadge = document.getElementById('cart-badge');
+                    console.log('cartBadge', cartBadge)
+                    if (cartBadge) {
+                    cartBadge.textContent = data.cart_total_quantity;
+                    }
                     if (data.success) {
                         quantity = data.quantity;
                         updateView();
@@ -282,6 +287,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (!response.ok) throw new Error('Server error');
 
                     const data = await response.json();
+                    const cartBadge = document.getElementById('cart-badge');
+
+
+                    if (cartBadge) {
+                        cartBadge.textContent = data.cart_total_quantity;}
                     if (data.success) {
                         quantity = data.quantity;
                         updateCartTotal();
@@ -425,4 +435,29 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     }
+//    Уведомления
+    const alerts = document.querySelectorAll('.alert-dismissible');
+
+    alerts.forEach(alert => {
+        const closeBtn = alert.querySelector('.alert-close');
+
+        // ← Функция закрытия
+        function closeAlert() {
+            alert.classList.add('fade-out');
+            // ← Ждём окончания анимации перед удалением
+            setTimeout(() => alert.remove(), 300);
+        }
+
+        // ← Клик по крестику
+        closeBtn?.addEventListener('click', closeAlert);
+
+        // ← Авто-закрытие через 3 секунды
+        const autoCloseTimer = setTimeout(closeAlert, 3000);
+
+        // ← Опционально: пауза при наведении мыши
+        alert.addEventListener('mouseenter', () => clearTimeout(autoCloseTimer));
+        alert.addEventListener('mouseleave', () => {
+            setTimeout(closeAlert, 3000);
+        });
+    });
 });
