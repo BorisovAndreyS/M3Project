@@ -18,7 +18,6 @@ def update_cart_item(request, itemid):
     product_stock_total = product_cart_itemid.product.stock
     quantity = product_cart_itemid.quantity
     cart = product_cart_itemid.cart
-    # print(request.user.is_authenticated)
     is_ajax = request.content_type == 'application/json'
 
     if request.method == 'POST' and is_ajax:
@@ -29,6 +28,7 @@ def update_cart_item(request, itemid):
             return JsonResponse({
                 'success': False,
                 'message': f'Доступно только {product_cart_itemid.product.stock}',
+                'cart_total_quantity': cart.total_items,
                 'quantity': target_quantity,
             })
 
@@ -38,6 +38,7 @@ def update_cart_item(request, itemid):
                 'success': True,
                 'message': f'Позиция {product_cart_itemid} изменена в корзину',
                 'quantity': target_quantity,
+                'cart_total_quantity': cart.total_items,
                 'action': 'removed' if target_quantity == 0 else 'updated'
             })
 
@@ -60,6 +61,7 @@ def update_cart_item(request, itemid):
                 'success': True,
                 'message': f'Позиция {product_cart_itemid} изменена в корзину',
                 'quantity': quantity,
+                'cart_total_quantity': cart.total_items,
                 'action': 'removed' if target_quantity == 0 else 'updated'
             })
 
@@ -82,6 +84,7 @@ def add_to_cart(request, product_slug):
             'success': False,
             'message': f'Доступно только {product.stock}',
             'quantity': target_quantity,
+            'cart_total_quantity': cart.total_items,
         })
 
     if target_quantity == 0:
@@ -105,6 +108,7 @@ def add_to_cart(request, product_slug):
             'success': True,
             'message': f'Товар {product.name} добавлен в корзину',
             'quantity': quantity,
+            'cart_total_quantity': cart.total_items,
             'action': 'removed' if target_quantity == 0 else 'updated'
         })
     # Если обычный запрос, редирект и сообщение
@@ -145,18 +149,23 @@ class CheckoutView(FormView):
 
     def form_valid(self, form):
         # ← Логика создания заказа (см. Алгоритм выше)
+
         cart = get_or_create_cart(
             request=self.request
         )
+
+        if not (cart.items.all().exists()):
+            messages.error(self.request, 'Корзина пустая, заказ создать не удалось!')
+            return redirect('orders:cart_detail')
+
         order = Order.objects.create(
             user=self.request.user,
             first_name=form.cleaned_data['first_name'],
             last_name=form.cleaned_data['last_name'],
-            # email=form.cleaned_data['email'],
             phone=form.cleaned_data['phone'],
             city=form.cleaned_data['city'],
             address=form.cleaned_data['address'],
-            # total_price=cart.total_price
+
         )
 
         for item in cart.items.all():
