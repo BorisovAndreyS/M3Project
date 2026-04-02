@@ -25,24 +25,25 @@
 git clone https://github.com/BorisovAndreyS/M3Project
 cd M3Project 
 ```
-2. Установите зависимости
+2. Настройте окружение
 ```bash
-poetry install
-poetry update
+cp .env.example .env
 ```
-3. Примените миграции
+# Отредактируйте переменные при необходимости
+
+3. Соберите и запустите контейнеры
 ```bash
-python manage.py migrate
+docker-compose up --build
 ```
 
-4. Создайте суперпользователя
+4. В новом терминале примените миграции
 ```commandline
-python manage.py createsuperuser
+docker-compose exec backend python manage.py migrate
 ```
 
-5. Запустите сервер
+5. Создайте суперпользователя
 ```commandline
-python manage.py runserver
+docker-compose exec backend python manage.py createsuperuser
 ```
 
 6. Откройте http://127.0.0.1:8000
