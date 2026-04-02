@@ -17,9 +17,8 @@ class ReviewsForm(forms.ModelForm):
                 'class': 'Input',
                 'rows': 5,
                 'placeholder': 'Your text',
-                }),
+            }),
         }
-
 
         labels = {
             'rating': 'Rating',
