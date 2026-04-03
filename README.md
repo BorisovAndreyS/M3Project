@@ -25,47 +25,30 @@
 git clone https://github.com/BorisovAndreyS/M3Project
 cd M3Project 
 ```
-2. Установите зависимости
+2. Настройте окружение
 ```bash
-poetry install
-poetry update
+cp .env.example .env
 ```
-3. Примените миграции
+# Отредактируйте переменные при необходимости
+
+3. Соберите и запустите контейнеры
 ```bash
-python manage.py migrate
+docker-compose up --build
 ```
 
-4. Создайте суперпользователя
+4. В новом терминале примените миграции
 ```commandline
-python manage.py createsuperuser
+docker-compose exec backend python manage.py migrate
 ```
 
-5. Запустите сервер
+5. Создайте суперпользователя
 ```commandline
-python manage.py runserver
+docker-compose exec backend python manage.py createsuperuser
 ```
 
 6. Откройте http://127.0.0.1:8000
 
 **Админка**
 http://127.0.0.1:8000/admin/
-
-
-
-
-
-The project includes the layout and client-side logic for the following pages and components:
-
--   **Homepage (`home.html`):** a product catalog with interactive filters.
--   **Product Pages:** 12 unique pages for each product, complete with descriptions, specifications, and user reviews.
--   **Shopping Cart (`cart.html`):** an interactive cart with features to change item quantities and remove items, with automatic total recalculation.
--   **Checkout (`checkout.html`):** a form for entering shipping information and selecting a payment method.
--   **Authentication:**
-    -   Login (`login.html`), registration (`register.html`), and password recovery (`forgot_password.html`) pages.
-    -   **Login/Logout Simulation:** the header dynamically changes based on the user's authentication status (using `localStorage`).
--   **User Account (`account.html`):** a tabbed page for viewing order history and editing user information.
--   **Custom Admin Panel:**
-    -   A page to view the product list (`admin/products.html`).
-    -   A form to add/edit products (`admin/add.html`) with an image upload simulation.
 
 
