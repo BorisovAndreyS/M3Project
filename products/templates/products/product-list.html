@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<!-- Main Content -->
+<main>
+    <section class="hero-banner">
+        <img src="{% static 'img/background/hopfen-fields.jpg' %}" alt="Beautiful hops on a dark background"
+             class="hero-banner__image">
+        <div class="hero-banner__overlay"></div>
+    </section>
+
+    <form action="." method="get" class="main-filter-form">
+
+        <div class="container main-content-grid">
+            <aside class="sidebar filter-menu">
+
+                <!--            Красивые баблы выбранных категорий-->
+                <!--            <div class="sidebar__section">-->
+                <!--                <h3 class="section-title">Keywords</h3>-->
+                <!--                <div class="keywords-list">-->
+                <!--                </div>-->
+                <!--            </div>-->
+
+                <div class="sidebar__section">
+                    <h3 class="section-title">Сategories</h3>
+
+
+                    <div class="checkbox-group">
+                        {% for category in categories %}
+                        <label class="checkbox-container">{{ category.name }}
+                            <input type="checkbox"
+                                   name="category"
+                                   value="{{ category.id }}"
+                                   {% if category.id|stringformat:'i' in select_category %}
+                            checked
+                            {% endif %} >
+                            <span class="checkmark"></span>
+                        </label>
+                        {% empty %}
+                        <p>No category found</p>
+                        {% endfor %}
+                    </div>
+
+
+                </div>
+                <div class="sidebar__section">
+                    <button class="button button--primary" id="filter-button">Apply</button>
+                </div>
+
+            </aside>
+
+            <section class="products-area product-grid-section">
+                <!--                Строка поиска - Работает-->
+                <div class="search-sort-bar">
+                    <div class="search-input-wrapper">
+                        <input type="text" name="q" value="{{ request.GET.q|default:'' }}" placeholder="Search"
+                               class="search-input">
+                        <button type="submit" class="search-button" aria-label="Search">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+                    <!--                    Сортировка работает-->
+                    <div class="sort-options">
+                        <!--                        New-->
+                        <button
+                                type="submit"
+                                name="sort"
+                                value="new"
+                                class="sort-button
+                                {% if request.GET.sort == 'new' or not request.GET.sort %}active-sort{% endif %}">
+                            New
+                        </button>
+                        <!--                            Price ascending-->
+                        <button
+                                type="submit"
+                                name="sort"
+                                value="price_asc"
+                                class="sort-button
+                                {% if request.GET.sort == 'price_asc' %}active-sort{% endif %}">
+                            Price ascending
+                        </button>
+
+                        <button
+                                type="submit"
+                                name="sort"
+                                value="price_desc"
+                                class="sort-button
+                                {% if request.GET.sort == 'price_desc' %}active-sort {% endif %}">
+                            Price descending
+                        </button>
+                        <button
+                                type="submit"
+                                name="sort"
+                                value="rating"
+                                class="sort-button
+                                {% if request.GET.sort == 'rating' %} active-sort {% endif %}">
+                            Rating
+                        </button>
+                    </div>
+                </div>
+
+                <div class="product-grid">
+                    {% for product in products %}
+                    <a href="{% url 'products:product' product.slug %}" class="product-card-link">
+                        <div class="product-card">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-card__image">
+                            <div class="product-card__info">
+                                <h4 class="product-card__name">{{ product.name }}</h4>
+                                <p class="product-card__price">{{ product.price }}</p>
+                                <p class="product-card__description">{{product.description|truncatechars:70 }}</p>
+                            </div>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <p>No product found</p>
+                    {% endfor %}
+                </div>
+<!--                Пагинация с сохранением параметров поиска фильтрации и сортировки-->
+                <div class="pagination ">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{%endif%}{% endfor %}"
+                           class="pagination__link pagination__link--prev">
+                            <i class="fa-solid fa-arrow-left"></i>
+                            <span>Previous</span>
+                        </a>
+                            {% if page_obj.number > 3 %}
+                            <a href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{%endif%}{% endfor %}" class="pagination__link">1</a>
+                                {% if page_obj.number > 4 %}
+                                <span class="pagination__dots">...</span>
+                                {% endif %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{%endif%}{% endfor %}" class="pagination__link active">{{ num }}</a>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3'%}
+                            <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{%endif%}{% endfor %}" class="pagination__link">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        {% if page_pbj.number < page_obj.paginator.num_pages|add:'-3' %}
+                            <span class="pagination__dots">...</span>
+                            <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{%endif%}{% endfor %}" class="pagination__link">{{page_obj.paginator.num_pages }}</a>
+                        {% elif page_obj.number < page_obj.paginator.num_pages|add:'-2' %}
+                            <a href="?page={{ page_obj.paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{%endif%}{% endfor %}" class="pagination__link">{{page_obj.paginator.num_pages }}</a>
+                        {% endif %}
+
+                        <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{key}}={{value}}{%endif%}{% endfor %}"
+                           class="pagination__link pagination__link--next">
+                            <span>Next</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    {% endif %}
+
+                </div>
+            </section>
+        </div>
+    </form>
+</main>
+
+{% endblock %}

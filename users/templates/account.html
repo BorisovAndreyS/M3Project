@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block content %}
+
+<!-- Main Content -->
+<main class="account-page-wrapper">
+  <div class="account-container">
+    <!-- Tabs Navigation -->
+    <div class="account-tabs">
+      <button class="account-tab active" data-tab-target="#order-history">Order History</button>
+      <button class="account-tab" data-tab-target="#account-info">Account Information</button>
+    </div>
+
+    <!-- Tabs Content -->
+    <div class="tab-content">
+      <!-- Order History Panel -->
+      <div id="order-history" class="tab-pane active">
+        <div class="order-history-table">
+          <!-- Table Header -->
+          <div class="order-table-header">
+            <div class="order-table-cell">Order Details</div>
+            <div class="order-table-cell">Order Status</div>
+            <div class="order-table-cell">Total</div>
+          </div>
+          <!-- Table Body -->
+          <div class="order-table-body">
+            <!-- Example Row 1 -->
+            {% for order in orders %}
+            <div class="order-table-row">
+              <div class="order-table-cell">
+                <span class="order-id">#{{ order.id }}</span>
+                <span class="order-date">{{ order.created_at|date }}</span>
+              </div>
+              <div class="order-table-cell">
+                <span class="order-status">{{ order.status }}</span>
+              </div>
+              <div class="order-table-cell">
+                <span class="order-total">${{ order.total_price }}</span>
+              </div>
+            </div>
+            {% empty %}
+            <p>No order find</p>
+            {% endfor %}
+          </div>
+        </div>
+
+
+
+        <!-- Pagination (simplified) -->
+        <div class="account-pagination">
+<!--          {% if page_obj.has_previous %}-->
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-link-account">← Previous</a>
+<!--          {% endif %}-->
+<!--          {% if page_obj.has_next %}-->
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-link-account">Next →</a>
+<!--          {% endif %}-->
+        </div>
+      </div>
+
+      <!-- Account Information Panel -->
+      <div id="account-info" class="tab-pane">
+        <div class="account-form-container">
+          <h2 class="account-form-title">Personal Info</h2>
+          <form id="account-info-form" enctype="multipart/form-data" method="post" action="{% url 'users:update' %}">
+            {% csrf_token %}
+            <div class="profile-layout">
+              <div class="photo-area">
+                  <div class="checkout-form-group">
+                      <label>Profile Photo</label>
+                      <div class = "photo-upload-container">
+                        {% if user.image %}
+                          <img src="{{ user.image.url }}" alt="Profile Photo" class="profile-photo-preview">
+                        {% else %}
+                          <img src="{% static '../media/profile_images/default.png' %}" alt="Default Photo" class="profile-photo-preview">
+                        {% endif %}
+                        <label for="id_image" class="button button--primary button--full-width">
+                          📷 Change Photo
+                        </label>
+                        <input type="file" id="id_image" name="image" accept="image/*" style="display: none;">
+                      </div>
+                    </div>
+              </div>
+              <div class="fields-area">
+                  <div class="checkout-form-group">
+                      <label for="acc-first-name">First Name</label>
+                      <input type="text" id="acc-first-name" name="first_name"
+                             class="Input" placeholder="first_name" value="{{ user.first_name }}" required>
+                    </div>
+                    <div class="checkout-form-group">
+                      <label for="acc-last-name">Last Name</label>
+                      <input type="text" id="acc-last-name" name="last_name"
+                             class="Input" placeholder="last_name" value="{{ user.last_name }}" required>
+                    </div>
+                    <div class="checkout-form-group">
+                      <label for="acc-phone">Phone number</label>
+                      <input type="tel" id="acc-phone" name="phone"
+                     class="Input" placeholder="Value" value="{{ user.phone }}" required>
+                    </div>
+                    <div class="checkout-form-group">
+                      <label for="acc-email">Email</label>
+                      <input type="email" id="acc-email" name="email"
+                      class="Input" placeholder="example@mail.com" value="{{ user.email }}" required>
+                    </div>
+              </div>
+            </div>
+
+            <div class="checkout-form-group">
+              <label for="acc-city">City</label>
+              <input type="text" id="acc-city" name="city"
+                     class="Input" placeholder="Value" value="{{ user.city }}" required>
+            </div>
+            <div class="checkout-form-group">
+              <label for="acc-address">Shipping address</label>
+              <textarea id="acc-address" name="address"
+                        class="Textarea" placeholder="{{ user.address }}"  rows="3" required>{{ user.address }}</textarea>
+            </div>
+            <button type="submit" class="button button--primary button--full-width">Save</button>
+          </form>
+          <form action = "{% url 'users:logout' %}" method = "post">
+              {% csrf_token %}
+              <button  class="button button--secondary button--full-width" id="logout-button">Logout</button>
+          <form>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+{% endblock %}

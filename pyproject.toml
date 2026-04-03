@@ -23,6 +23,8 @@ ipython = "^9.10.0"
 django-extensions = "^4.1"
 django-debugtools = "^2.0"
 python-dotenv = "^1.2.1"
+uvicorn = "^0.41.0"
+psycopg2-binary = "^2.9.11"
 
 
 [build-system]
