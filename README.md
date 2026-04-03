@@ -1,3 +1,8 @@
+# Проект Online Store
+
+
+
+
 The project includes the layout and client-side logic for the following pages and components:
 
 -   **Homepage (`home.html`):** a product catalog with interactive filters.
